@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import head from './utilities/backgroundImg.png'
 import './index.css'
 import Posts from './components/Posts'
 
 const App = ({jobs}) => {
 
-    // const [searchQuery, setSearchQuery] = useState("");    
-
-    const [filteredName, setFilteredName] = useState({
+    const [filteredName, setFilteredName] = useState([{
         id: "",
         company: "",
         description: "",
@@ -15,26 +13,13 @@ const App = ({jobs}) => {
         type: "",
         location: "",
         time: ""
-    });
+    }]);
 
-    const handleSearch = (e) => {
-        jobs.map(job => {
-            if (job.title.toLowerCase().includes(e.target.value.toLowerCase())) {
-
-                const time = new Date(Date.parse(job.created_at)).toDateString();
-
-                setFilteredName({
-                    id: job.id,
-                    company: job.company,
-                    description: job.description,
-                    title: job.title,
-                    type: job.type,
-                    location: job.location,
-                    time: time
-                });
-            }
-        })
-    }
+    const handleSearch = (e) =>{
+        const title = e.target.value;
+        const filteredJobs = jobs.filter(job => job.title.toLowerCase().includes(title.toLowerCase()));
+        setFilteredName([...filteredName, filteredJobs]);
+    }   
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -54,7 +39,6 @@ const App = ({jobs}) => {
                 placeholder="Tittle, companies, expertise or benefits" 
                 autoComplete='off'
                 onChange={handleSearch}
-                //value={value}
                 />
 
 
@@ -89,10 +73,19 @@ const App = ({jobs}) => {
                         </div>
                     </div>
                 </aside>
-                <Posts 
-                data={jobs}
-                job={filteredName}
-                />
+                <div className="col-8 ml-5">
+                    {
+                    filteredName.map(item => {
+                            for(let i = 0; i < item.length; i++){
+                                return (
+                                    <Posts key={item[i].id} jobs={item[i]} />
+                                )
+                            }
+                    })
+                    }
+                </div>
+
+
             </div>
         </div>
             
